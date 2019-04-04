@@ -49,6 +49,7 @@ d)donnée SQL
 `# apt-get install mariadb-server python-pymysql`
 
 *Créer et éditer le fichier `/etc/mysql/mariadb.conf.d/99-openstack.cnf` comme suit :
+
 `[mysqld]
 bind-address = 192.168.1.251
 
@@ -57,14 +58,18 @@ innodb_file_per_table = on
 max_connections = 4096
 collation-server = utf8_general_ci
 character-set-server = utf8`
+
 #redémarrer le service SQL
 `# service mysql restart`
-#*pour sécuriser le service base de donnée
+
+#pour sécuriser le service base de donnée
 `# mysql_secure_installation`
+
 et repondrez aux questions par y
-d)File de message :`
-`*install le paquet :`
-`#`apt-get install rabbitmq-server`
+d)File de message :
+*install le paquet :
+`#apt-get install rabbitmq-server`
+
 *Ajouter l’utilisateur openstack
 `# rabbitmqctl add_user openstack mind`
 Creating user "openstack" ...
