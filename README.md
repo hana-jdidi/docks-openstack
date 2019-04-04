@@ -65,58 +65,102 @@ d)donnée SQL
 `# mysql_secure_installation`
 
 et repondrez aux questions par y
+
 d)File de message :
+
 *install le paquet :
+
 `#apt-get install rabbitmq-server`
 
 *Ajouter l’utilisateur openstack
+
 `# rabbitmqctl add_user openstack mind`
+
 Creating user "openstack" ...
 
 #Permet la configuration, les accès en lecture et écriture pour l’utilisateur alpenstock.
+
 `# rabbitmqctl set_permissions openstack ".*" ".*" ".*"`
+
 Setting permissions for user "openstack" in vhost "/" ...
 
 e)memcached :
+
 *install le paquet :
+
 `# apt-``get` `install memcached python-memcache`
 
 *éditer le fichier /etc/memcached.conf
+
 `-l 192.168.1.251`
+
 *restart le service memcached
+
 `# service memcached restart`
 
-f)etcd :un magasin de clé-valeur distribué fiable pour verrouiller des clés distribuées, stocker des configurations, tracer l’état des services.
+
+f)etcd :un magasin de clé-valeur distribué fiable pour verrouiller des clés distribuées, stocker des configurations, tracer 
+
+l’état des services.
+
 *install le paquet :
+
 `#` `apt-get` `install etcd`
+
 *éditer le fichier comme suit :
+
 `ETCD_NAME="controller"
+
 ETCD_DATA_DIR="/var/lib/etcd"
+
 ETCD_INITIAL_CLUSTER_STATE="new"
+
 ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster-01"
+
 ETCD_INITIAL_CLUSTER="controller=http://192.168.1.251:2380"
+
 ETCD_INITIAL_ADVERTISE_PEER_URLS="http://192.168.1.251:2380"
+
 ETCD_ADVERTISE_CLIENT_URLS="http://192.168.1.251:2379"
+
 ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
+
 ETCD_LISTEN_CLIENT_URLS="http://192.168.1.251:2379"'`
+
 *Activer et démarrer le service etcd
+
 `# systemctl enable etcd`
+
 `# systemctl start etcd`
+
 # 2)service keystone
+
 # utiliser` `le client bade de donnée` 
+
 ``# mysql`
+
 # crier base de donnée keystone 
+
 `MariaDB [(none)]>CREATE DATABASE keystone;`
+
 # donnée le` `privilège` `:
+
 `MariaDB [(none)]> GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' \
 IDENTIFIED BY 'mind';
+
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' \
 IDENTIFIED BY mind';`
+
 # exit base de donnée 
+
 `exit` 
+
 # installer les paquets :
+
 `# apt-get install keystone  apache2 libapache2-mod-wsgi`
+
 # éditer le fichier `/etc/keystone/keystone.conf` comme suit :
+
 `[database]
 # ...
 connection = mysql+pymysql://keystone:mind@controller/keystone
@@ -124,480 +168,952 @@ connection = mysql+pymysql://keystone:mind@controller/keystone
 # ...
 provider = fernet`
 
+
 # Remplir la base de données du service d'identité
+
 `# su -s /bin/sh -c "keystone-manage db_sync" keystone`
+
 # Remplir la base de données
+
 `# keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone`
+
 `# keystone-manage credential_setup --keystone-user keystone --keystone-group keystone`
+
 # Démarrer le service d'identité
+
 
 `# keystone-manage bootstrap --bootstrap-password mind \
   --bootstrap-admin-url http://controller:5000/v3/ \
   --bootstrap-internal-url http://controller:5000/v3/ \
   --bootstrap-public-url http://controller:5000/v3/ \
   --bootstrap-region-id RegionOne`
+
 # configuration du service apache2 :
-   -éditer le ficher `/etc/apache2/apache2.conf` comme suit: 
+
+-éditer le ficher `/etc/apache2/apache2.conf` comme suit: 
+
 ajoutez `ServerName controller`
-   -rédemarrer le service 
+
+-rédemarrer le service 
+
 `# service apache2 restart `
-  -Configurer le compte administratif
+
+-Configurer le compte administratif
+
 `$ export OS_USERNAME=admin
+
 $ export OS_PASSWORD=mind
+
 $ export OS_PROJECT_NAME=admin
+
 $ export OS_USER_DOMAIN_NAME=Default
+
 $ export OS_PROJECT_DOMAIN_NAME=Default
+
 $ export OS_AUTH_URL=http://controller:5000/v3
+
 $ export OS_IDENTITY_API_VERSION=3`
- # creation d’un domaine ,projet ,utilisateur et rôle
+
+# creation d’un domaine ,projet ,utilisateur et rôle
+
 
  # -Créer le projet de service
-`$ openstack project create --domain default \
-  --description "Service Project" service`
- # -crée le projet myproject et l'utilisateur myuser :
 
 `$ openstack project create --domain default \
-  --description "Demo Project" myproject`
+
+--description "Service Project" service`
+
+# -crée le projet myproject et l'utilisateur myuser :
+
+
+
+`$ openstack project create --domain default \
+
+--description "Demo Project" myproject`
+
 `$ openstack user create --domain default \
-  --password-prompt myuser`
-  -créer le role
+
+--password-prompt myuser`
+
+-créer le role
+
 `$openstack rôle create myrole`
 
-  # Ajoutez le rôle myrole au projet myproject et à l'utilisateur myuser
+
+
+# Ajoutez le rôle myrole au projet myproject et à l'utilisateur myuser
+
 `$ openstack role add --project myproject --user myuser myrole`
 
+
+
 # vérification :
-   -Désactiver les variables temporaires d'environnement
+
+-Désactiver les variables temporaires d'environnement
+
 `$ unset OS_AUTH_URL OS_PASSWORD`
 
- # -demandez un jeton d'authentification en tant que utilisateur admin :
+
+
+# -demandez un jeton d'authentification en tant que utilisateur admin :
+
 `$ openstack --os-auth-url http://controller:5000/v3 \`
+
 `  --os-project-domain-name Default --os-user-domain-name Default \
-  --os-project-name admin --os-username admin token issue`
 
-  # -demandez un jeton d'authentification en tant que utulisateur myuser :
+--os-project-name admin --os-username admin token issue`
+
+
+
+# -demandez un jeton d'authentification en tant que utulisateur myuser :
+
 `$ openstack --os-auth-url http://controller:5000/v3 \`
- ` --os-project-domain-name Default --os-user-domain-name Default \
-  --os-project-name myproject --os-username myuser token issue`
 
-  # Créer des scripts d'environnement client OpenStack :
-  #  -crée et éditer le fichier admin-openrc comme suit :
+` --os-project-domain-name Default --os-user-domain-name Default \
+
+--os-project-name myproject --os-username myuser token issue`
+
+
+
+# Créer des scripts d'environnement client OpenStack :
+
+#  -crée et éditer le fichier admin-openrc comme suit :
+
 `export OS_PROJECT_DOMAIN_NAME=Default`
+
 export OS_USER_DOMAIN_NAME=Default
+
 export OS_PROJECT_NAME=admin
+
 export OS_USERNAME=admin
+
 export OS_PASSWORD=mind
+
 export OS_AUTH_URL=http://controller:5000/v3
+
 export OS_IDENTITY_API_VERSION=3
+
 export OS_IMAGE_API_VERSION=2
- # -crere et éditer le fichier demo-openrc comme suit :
+
+# -crere et éditer le fichier demo-openrc comme suit :
+
 `export OS_PROJECT_DOMAIN_NAME=Default
+
 export OS_USER_DOMAIN_NAME=Default
+
 export OS_PROJECT_NAME=myproject
+
 export OS_USERNAME=myuser
+
 export OS_PASSWORD=mind
+
 export OS_AUTH_URL=http://controller:5000/v3
+
 export OS_IDENTITY_API_VERSION=3
+
 export OS_IMAGE_API_VERSION=2`
- # Chargez le fichier admin-openrc pour renseigner les variables d'environnement avec l'emplacement du service Identité et les informations d'identification du projet et de l'utilisateur admin :
-  `$ . admin-openrc`
- # Demander un jeton d'authentification
+
+# Chargez le fichier admin-openrc pour renseigner les variables d'environnement avec l'emplacement du service Identité et les 
+informations d'identification du projet et de l'utilisateur admin :
+
+`$ . admin-openrc`
+
+# Demander un jeton d'authentification
+
+
 
 `$openstack token issue`
 
+
+
 # **3)service glance:**
 
+
 # *les paquets
+
 -connecter a la base de donnée et créer une base de donnée glance
+
 `#mysql`
+
 `MariaDB [(none)]> CREATE DATABASE glance;`
 
+
+
 # -donnée le privilège:
+
 `MariaDB [(none)]> GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' \
-  IDENTIFIED BY 'mind';
+
+IDENTIFIED BY 'mind';
+
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' \
-  IDENTIFIED BY 'mind';`
+
+IDENTIFIED BY 'mind';`
+
 # exit base de donnée  
+
 `exit` 
+
 # Sourcez les informations d'identification:
+
 `$ . admin-openrc`
+
+
 
 # creation de l’utulisateur glance:
+
 `$ openstack user create --domain default --password-prompt glance`
 
+
+
 # Ajouter le rôle d'administrateur au projet d'utilisateur et de service de projet:
+
 `$ openstack role add --project service --user glance admin`
 
+
+
 -création de service glance:
+
 `$ openstack service create --name glance \
-  --description "OpenStack Image" image`
+
+--description "OpenStack Image" image`
+
 -Créez les points de terminaison de l'API du service image
 
+
+
 `$ openstack endpoint create --region RegionOne \
-  image public http://controller:9292
+
+image public http://controller:9292
+
 $ openstack endpoint create --region RegionOne \
   image internal http://controller:9292
+
 $ openstack endpoint create --region RegionOne \
-  image admin http://controller:9292`
+
+image admin http://controller:9292`
+
 -installer le paquet:
+
 `# apt-get install glance`
 
+
+
 -éditer le fichier `/etc/glance/glance-api.conf` comme suit:`
+
 `configurez la connection avec la base de données dans la section database
+
 `[database]
+
 # ...
+
 connection = mysql+pymysql://glance:mind@controller/glance`
+
 configurer l’access au service keystone dans la section keystone_authtoken
+
 `[keystone_authtoken]
+
 # ...
+
 www_authenticate_uri = http://controller:5000
+
 auth_url = http://controller:5000
+
 memcached_servers = controller:11211
+
 auth_type = password
+
 project_domain_name = Default
+
 user_domain_name = Default
+
 project_name = service
+
 username = glance
+
 password = mind
 
+
+
 [paste_deploy]
+
 # ...
+
 flavor = keystone
+
 [glance_store]
+
 # ...
+
 stores = file,http
+
 default_store = file
+
 filesystem_store_datadir = /var/lib/glance/images/`
+
 -éditer le fichier `/etc/glance/glance-registry.conf` comme suit :
+
 `[database]
+
 # ...
+
 connection = mysql+pymysql://glance:mind@controller/glance
+
 [keystone_authtoken]
+
 # ...
+
 www_authenticate_uri = http://controller:5000
+
 auth_url = http://controller:5000
+
 memcached_servers = controller:11211
+
 auth_type = password
+
 project_domain_name = Default
+
 user_domain_name = Default
+
 project_name = service
+
 username = glance
+
 password = mind
 
+
+
 [paste_deploy]
+
 # ...
+
 flavor = keystone`
+
 emplir base de donnée
+
 `# su -s /bin/sh -c "glance-manage db_sync" glance`
+
 -restart le service d’image :
+
 `# service glance-registry restart
+
 # service glance-api restart`
+
 *verification :
+
 `$ . admin-openrc`
- -télécharger l’image
-`$ wget [http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img](http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img)`
-`-`Téléchargez l'image sur le service Image à l'aide du format de disque QCOW2, du format de conteneur nu et de la visibilité publique afin que tous les projets puissent y accéder.
+
+-télécharger l’image
+
+`$ wget [http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img](http://download.cirros-cloud.net/0.4.0/cirros-
+0.4.0-x86_64-disk.img)`
+
+`-`Téléchargez l'image sur le service Image à l'aide du format de disque QCOW2, du format de conteneur nu et de la visibilité 
+publique afin que tous les projets puissent y accéder.
+
 `$ openstack image create "cirros" \
-  --file cirros-0.4.0-x86_64-disk.img \
-  --disk-format qcow2 --container-format bare \
-  --public`
+
+--file cirros-0.4.0-x86_64-disk.img \
+
+--disk-format qcow2 --container-format bare \
+
+--public`
+
 `-`Confirmez le téléchargement de l'image et validez les attributs :
+
 `$ openstack image list`
+
 _**4)service nova :**_
+
 _**nova controller**_ 
+
 ***** Pour créer les bases de données, procédez comme suit:
-        -Utilisez le client d'accès à la base de données
+
+-Utilisez le client d'accès à la base de données
+
 `# mysql`
-   -créer la base de donnée 
+
+-créer la base de donnée 
+
 `MariaDB [(none)]> CREATE DATABASE nova_api;
+
 MariaDB [(none)]> CREATE DATABASE nova;
+
 MariaDB [(none)]> CREATE DATABASE nova_cell0;
+
 MariaDB [(none)]> CREATE DATABASE placement;` 
-  -donnée le privilège :
+
+-donnée le privilège :
+
 `MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'localhost' \
-  IDENTIFIED BY 'mind';
+
+IDENTIFIED BY 'mind';
+
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova_api.* TO 'nova'@'%' \
-  IDENTIFIED BY 'mind';
+
+IDENTIFIED BY 'mind';
+
+
 
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' \
-  IDENTIFIED BY 'mind';
+
+IDENTIFIED BY 'mind';
+
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' \
-  IDENTIFIED BY 'mind';
+
+IDENTIFIED BY 'mind';
+
+
 
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'localhost' \
-  IDENTIFIED BY 'mind';
+
+IDENTIFIED BY 'mind';
+
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON nova_cell0.* TO 'nova'@'%' \
-  IDENTIFIED BY 'mind';
+
+IDENTIFIED BY 'mind';
+
 
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON placement.* TO 'placement'@'localhost' \
-  IDENTIFIED BY 'mind';
+
+IDENTIFIED BY 'mind';
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON placement.* TO 'placement'@'%' \
-  IDENTIFIED BY 'mind';`
+
+IDENTIFIED BY 'mind';`
+
+
 `exit`
 `$ . admin-openrc`
+
 -créer utilisateur nova :
+
 `$ openstack user create --domain default --password-prompt nova`
+
 -Ajouter le rôle d'administrateur à l'utilisateur nova :
+
 `$openstack role add --project service --user nova admin`
+
 -Créer l'entité de service nova :
+
 `$ openstack service create --name nova \
-  --description "OpenStack Compute" compute`
+
+--description "OpenStack Compute" compute`
+
 -Create the Compute API service endpoints:
+
 `$ openstack endpoint create --region RegionOne \
   compute public http://controller:8774/v2.1
+
 $ openstack endpoint create --region RegionOne \
-  compute internal http://controller:8774/v2.1
+
+compute internal http://controller:8774/v2.1
+
 $ openstack endpoint create --region RegionOne \
-  compute admin http://controller:8774/v2.1`
+
+compute admin http://controller:8774/v2.1`
+
 -Créez un utilisateur de service
+
 `$ openstack user create --domain default --password-prompt placement`
- -Ajouter l'utilisateur de placement au projet de service avec le rôle admin
+
+-Ajouter l'utilisateur de placement au projet de service avec le rôle admin
+
 `$ openstack role add --project service --user placement admin`
+
 -Créer l'entrée de l'API d'emplacement dans le catalogue de services:
+
 `$ openstack service create --name placement \
-  --description "Placement API" placement`
+
+--description "Placement API" placement`
+
 -Créer les points de terminaison du service API de placement
+
 `$ openstack endpoint create --region RegionOne \
-  placement public http://controller:8778
+
+placement public http://controller:8778
+
 $ openstack endpoint create --region RegionOne \
-  placement internal http://controller:8778
+
+placement internal http://controller:8778
+
 $ openstack endpoint create --region RegionOne \
-  placement admin http://controller:8778`
+
+placement admin http://controller:8778`
+
+
 
 -installer les paquets 
+
 `# apt-get install nova-api nova-conductor nova-consoleauth \
-  nova-novncproxy nova-scheduler nova-placement-api`
+
+nova-novncproxy nova-scheduler nova-placement-api`
+
 -éditer le fichier `/etc/nova/nova.conf` comme suit :
+
 `[api_database]
+
 # ...
+
 connection = mysql+pymysql://nova:mind@controller/nova_api
 
+
+
 [database]
+
 # ...
+
 connection = mysql+pymysql://nova:mind@controller/nova
 
+
+
 [placement_database]
+
 # ...
+
 connection = mysql+pymysql://placement:mind@controller/placement
+
 [DEFAULT]
+
 # ...
+
 transport_url = rabbit://openstack:RABBIT_PASS@controller
+
 [api]
+
 # ...
+
 auth_strategy = keystone
 
+
+
 [keystone_authtoken]
+
 # ...
+
 auth_url = http://controller:5000/v3
+
 memcached_servers = controller:11211
+
 auth_type = password
+
 project_domain_name = default
+
 user_domain_name = default
+
 project_name = service
+
 username = nova
+
 password = mind
+
 [DEFAULT]
+
 # ...
+
 my_ip = 192.168.1.251
+
 [DEFAULT]
+
 # ...
+
 use_neutron = true
+
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
+
 [vnc]
+
 enabled = true
+
 # ...
+
 server_listen = $my_ip
+
 server_proxyclient_address = $my_ip
+
 [glance]
+
 # ...
+
 api_servers = http://controller:9292
+
 [oslo_concurrency]
+
 # ...
+
 lock_path = /var/lib/nova/tmp
+
 [placement]
+
 # ...
+
 region_name = RegionOne
+
 project_domain_name = Default
+
 project_name = service
+
 auth_type = password
+
 user_domain_name = Default
+
 auth_url = http://controller:5000/v3
+
 username = placement
+
 password = mind`
+
 -remplir la base de donnée nova_api
+
 `# su -s /bin/sh -c "nova-manage api_db sync" nova`
+
 -Enregistrez la base de données cell0:
+
 `# su -s /bin/sh -c "nova-manage cell_v2 map_cell0" nova`
+
 -crer le cll1 :
+
 `# su -s /bin/sh -c "nova-manage cell_v2 create_cell --name=cell1 --verbose" nova`
+
 109e1d4b-536a-40d0-83c6-5f121b82b650
+
 -remplir la base de donnée nova 
+
 `# su -s /bin/sh -c "nova-manage db sync" nova`
+
 -Vérifiez que nova cell0 et cell1 sont correctement enregistrés:
+
 `# su -s /bin/sh -c "nova-manage cell_v2 list_cells" nova`
+
 -finaliser l’installation 
+
 `# service nova-api restart
+
 # service nova-consoleauth restart
+
 # service nova-scheduler restart
+
 # service nova-conductor restart
+
 # service nova-novncproxy restart`
 
+
+
 # **nova compute**_
+
 installation et configuration :
+
 -installer le paquet :
+
 `# apt-get install nova-compute`
+
 -éditer le fichier /etc/nova/nova.conf comme suit
+
 `[DEFAULT]
+
 # ...
+
 transport_url = rabbit://openstack:mind@controller
+
 [api]
+
 # ...
+
 auth_strategy = keystone
 
+
+
 [keystone_authtoken]
+
 # ...
+
 auth_url = http://controller:5000/v3
+
 memcached_servers = controller:11211
+
 auth_type = password
+
 project_domain_name = default
+
 user_domain_name = default
+
 project_name = service
+
 username = nova
+
 password = mind
+
 [DEFAULT]
+
 # ...
+
 my_ip = 192.168.1.251
+
 [DEFAULT]
+
 # ...
+
 use_neutron = true
+
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
+
 [vnc]
+
 # ...
+
 enabled = true
+
 server_listen = 0.0.0.0
+
 server_proxyclient_address = $my_ip
+
 novncproxy_base_url = http://controller:6080/vnc_auto.html
+
 [glance]
+
 # ...
+
 api_servers = http://controller:9292
 
+
+
 [oslo_concurrency]
+
 # ...
+
 lock_path = /var/lib/nova/tmp
+
 [placement]
+
 # ...
+
 region_name = RegionOne
+
 project_domain_name = Default
+
 project_name = service
+
 auth_type = password
+
 user_domain_name = Default
+
 auth_url = http://controller:5000/v3
+
 username = placement
+
 password = mind`
+
+
 
 -Déterminez si votre nœud de traitement prend en charge l'accélération matérielle pour les machines virtuelles:
 
+
 `$egrep -c (vmx|svm) /proc/cpuinfo`
--Si cette commande renvoie une valeur supérieure ou égale à 1, votre nœud de calcul prend en charge l'accélération matérielle, qui ne nécessite généralement aucune configuration supplémentaire.
 
-Si cette commande renvoie la valeur zéro, votre noeud de traitement ne prend pas en charge l'accélération matérielle et vous devez configurer libvirt pour qu'il utilise QEMU au lieu de KVM.
+-Si cette commande renvoie une valeur supérieure ou égale à 1, votre nœud de calcul prend en charge l'accélération matérielle, 
+qui ne nécessite généralement aucune configuration supplémentaire.
 
-  Modifiez la section [libvirt] du fichier /etc/nova/nova-compute.conf comme suit:
+
+
+Si cette commande renvoie la valeur zéro, votre noeud de traitement ne prend pas en charge l'accélération matérielle et vous 
+devez configurer libvirt pour qu'il utilise QEMU au lieu de KVM.
+
+
+
+Modifiez la section [libvirt] du fichier /etc/nova/nova-compute.conf comme suit:
+
 `[libvirt]
+
 # ...
+
 virt_type = qemu`
+
 - restart le service compute 
+
 `# service nova-compute restart`
+
 `$ . admin-openrc`
+
 -puis confirmez qu'il y a des hôtes de compute dans la base de données:
+
 `$ openstack compute service list --service nova-compute`
+
 - Découvrez les hôtes de compute
+
 `# su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova`
+
+
+
 -editer le fichier `/etc/nova/nova.conf`:
+
 `[scheduler]
+
 discover_hosts_in_cells_interval = 300`
 *vérification :
+
+
+
 `$ . admin-openrc`
+
 -Répertoriez les composants de service pour vérifier le lancement et l'enregistrement de chaque processus
+
 `$ openstack compute service list`
+
 -les services installés
+
 `$ openstack catalog list`
+
 -les images téléchargée 
+
 `$ openstack image list`
+
 - Vérifiez que les cellules et l'API de positionnement fonctionnent correctement:
+
 `# nova-status upgrade check`
+
 # 5)service neutron**_ 
+
 _**controller node**_
+
 *crier base de donnée neutron 
+
 `# mysql`
+
 `MariaDB [(none)]>CREATE DATABASE neutron;`
+
 *donnée le privilège :
+
 `MariaDB [(none)]> GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' \
-  IDENTIFIED BY 'mind';
+
+IDENTIFIED BY 'mind';
+
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' \
-  IDENTIFIED BY 'mind';`
+
+IDENTIFIED BY 'mind';`
+
 `$ . admin-openrc`
+
 *création de neutron user :
+
 `$ openstack user create --domain default --password-prompt neutron`
+
 *Ajoutez le rôle admin à l'utilisateur neutron:
+
 `$ openstack role add --project service --user neutron admin`
+
 *création de service neutron :
+
 `$ openstack service create --name neutron \
-  --description "OpenStack Networking" network`
+
+--description "OpenStack Networking" network`
+
+
+
 
 *Créer les points de terminaison de l'API de service de mise en réseau
+
 `$ openstack endpoint create --region RegionOne \
-  network public http://controller:9696
+
+network public http://controller:9696
+
 $ openstack endpoint create --region RegionOne \
-  network internal http://controller:9696
+
+network internal http://controller:9696
+
 $ openstack endpoint create --region RegionOne \
-  network admin http://controller:9696`
+
+network admin http://controller:9696`
+
 pour option self-service :
+
 *installer les composons
+
 `# apt-get install neutron-server neutron-plugin-ml2 \
-  neutron-linuxbridge-agent neutron-l3-agent neutron-dhcp-agent \
-  neutron-metadata-agent`
+
+neutron-linuxbridge-agent neutron-l3-agent neutron-dhcp-agent \
+
+neutron-metadata-agent`
+
 *editer le fichier `/etc/neutron/neutron.conf` comme suit
+
 `[database]
+
 # ...
+
 connection = mysql+pymysql://neutron:mind@controller/neutron
+
 [DEFAULT]
+
 # ...
+
 core_plugin = ml2
+
 service_plugins = router
+
 allow_overlapping_ips = true
+
 [DEFAULT]
+
 # ...
+
 transport_url = rabbit://openstack:mind@controller
+
 [DEFAULT]
+
 # ...
+
 auth_strategy = keystone
 
+
+
 [keystone_authtoken]
+
 # ...
+
 www_authenticate_uri = http://controller:5000
+
 auth_url = http://controller:5000
+
 memcached_servers = controller:11211
+
 auth_type = password
+
 project_domain_name = default
+
 user_domain_name = default
+
 project_name = service
+
 username = neutron
+
 password = mind
+
 [DEFAULT]
+
 # ...
+
 notify_nova_on_port_status_changes = true
+
 notify_nova_on_port_data_changes = true
 
+
+
 [nova]
+
 # ...
+
 auth_url = http://controller:5000
+
 auth_type = password
+
 project_domain_name = default
+
 user_domain_name = default
+
 region_name = RegionOne
+
 project_name = service
+
 username = nova
+
 password = mind
 [oslo_concurrency]
 # ...
