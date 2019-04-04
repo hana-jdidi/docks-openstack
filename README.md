@@ -105,9 +105,9 @@ l’état des services.
 
 *install le paquet :
 
-`#` `apt-get` `install etcd`
+`#apt-get install etcd`
 
-*éditer le fichier comme suit :
+*éditer le fichier comme suit `/etc/deault/etcd` :
 
 `ETCD_NAME="controller"
 
