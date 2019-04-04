@@ -12,7 +12,7 @@ a)sécurité :
 
 pour accepter les caractères spéciaux entré dans le mot de passe :
 
-$ openssl rand -hex 10
+`$ openssl rand -hex 10 `
 → 5254d6acef68517f5a33
 
 ## b)Configurer les interfaces réseau
@@ -38,7 +38,9 @@ base de Finaliser l’installation
 Mettre à jour les packages sur tous les nœuds :
 
 `# apt-get update && apt dist-upgrade`
+
 `# reboot`
+
 `# apt-get install python-openstackclient`
 
 d)donnée SQL
