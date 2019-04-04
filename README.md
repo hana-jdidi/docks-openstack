@@ -37,9 +37,9 @@ base de Finaliser l’installation
 
 Mettre à jour les packages sur tous les nœuds :
 
-# apt-get update && apt dist-upgrade
-#reboot
-# apt-get install python-openstackclient
+`# apt-get update && apt dist-upgrade`
+`# reboot`
+`# apt-get install python-openstackclient`
 
 d)donnée SQL
 *install le paquet
