@@ -800,7 +800,7 @@ $ openstack endpoint create --region RegionOne \
  -installer le paquet:
 `# apt-get install cinder-api cinder-scheduler`
 *éditer le fichier `/etc/cinder/cinder.conf` comme suit :
-`[database]`
+`[database]
 # ...
 connection = mysql+pymysql://cinder:mind@controller/cinder
 [DEFAULT]
@@ -826,15 +826,15 @@ password = mind
 my_ip = 192.168.1.251
 [oslo_concurrency]
 # ...
-lock_path = /var/lib/cinder/tmp
-`*``remplir la base :`
+lock_path = /var/lib/cinder/tmp`
+-remplir la base :
 `# su -s /bin/sh -c "cinder-manage db sync" cinder`
-`*``éditer le fichier` `/etc/nova/nova.conf` `comme suit` 
-`[cinder]`
-os_region_name = RegionOne
-`*``redémarrer le service nova` 
+-éditer le fichier `/etc/nova/nova.conf` comme suit:
+`[cinder]
+os_region_name = RegionOne`
+ -redémarrer le service nova 
 `# service nova-api restart`
-`*``redémarrer le service de stockage :`
-`# service cinder-scheduler restart`
-# service apache2 restart
+-redémarrer le service de stockage :
+`# service cinder-scheduler restart
+# service apache2 restart`
 
