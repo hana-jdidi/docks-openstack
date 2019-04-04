@@ -88,7 +88,7 @@ e)memcached :
 
 *install le paquet :
 
-`# apt-``get` `install memcached python-memcache`
+`# apt-get install memcached python-memcache`
 
 *éditer le fichier /etc/memcached.conf
 
@@ -164,6 +164,8 @@ IDENTIFIED BY 'mind';`
 `[database]
 # ...
 connection = mysql+pymysql://keystone:mind@controller/keystone
+
+
 [token]
 # ...
 provider = fernet`
