@@ -50,13 +50,13 @@ d)donnée SQL
 
 *Créer et éditer le fichier `/etc/mysql/mariadb.conf.d/99-openstack.cnf` comme suit :
 
-`[mysqld]`
-`bind-address = 192.168.1.251
-default-storage-engine = innodb
-innodb_file_per_table = on
-max_connections = 4096
-collation-server = utf8_general_ci
-character-set-server = utf8`
+` [mysqld]
+ bind-address = 192.168.1.251
+ default-storage-engine = innodb
+ innodb_file_per_table = on
+ max_connections = 4096
+ collation-server = utf8_general_ci
+ character-set-server = utf8 `
 
 #redémarrer le service SQL
 `# service mysql restart`
