@@ -149,7 +149,7 @@ ETCD_LISTEN_CLIENT_URLS="http://192.168.1.251:2379"'`
 IDENTIFIED BY 'mind';
 
 MariaDB [(none)]> GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' \
-IDENTIFIED BY mind';`
+IDENTIFIED BY 'mind';`
 
 # exit base de donnée 
 
