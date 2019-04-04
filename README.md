@@ -37,7 +37,7 @@ base de Finaliser l’installation
 
 Mettre à jour les packages sur tous les nœuds :
 
-`# apt-get update && apt dist-upgrade`
+`# apt-get update && apt-get dist-upgrade`
 
 `# reboot`
 
