@@ -107,7 +107,7 @@ l’état des services.
 
 `#apt-get install etcd`
 
-*éditer le fichier comme suit `/etc/deault/etcd` :
+*éditer le fichier comme suit `/etc/default/etcd` :
 
 `ETCD_NAME="controller"
 
