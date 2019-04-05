@@ -217,6 +217,8 @@ $ export OS_AUTH_URL=http://controller:5000/v3
 $ export OS_IDENTITY_API_VERSION=3`
 
 # creation d’un domaine ,projet ,utilisateur et rôle
+-Bien que le domaine «par défaut» existe déjà à l’étape de l’amorçage de keystone dans ce guide, un moyen formel de créer un nouveau domaine serait:
+` openstack domain create --description "An Example Domain" example`
 
 
  # -Créer le projet de service
