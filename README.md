@@ -1,14 +1,8 @@
 **Installation openstack rocky service par service**
 
-  
-
-  
-
 _**1)environnement :**_
 
-  
-
-a)sécurité :
+  a)sécurité :
 
 pour accepter les caractères spéciaux entré dans le mot de passe :
 
@@ -31,9 +25,7 @@ c)paquets openstack :
 
  `#add-apt-repository cloud-archive:rocky `
 
-  
-
-base de Finaliser l’installation
+  base de Finaliser l’installation
 
 Mettre à jour les packages sur tous les nœuds :
 
@@ -135,15 +127,15 @@ ETCD_LISTEN_CLIENT_URLS="http://192.168.1.251:2379"'`
 
 # 2)service keystone
 
-# utiliser` `le client bade de donnée` 
+# utiliser le client bade de donnée
 
-``# mysql`
+`# mysql`
 
 # crier base de donnée keystone 
 
 `MariaDB [(none)]>CREATE DATABASE keystone;`
 
-# donnée le` `privilège` `:
+# donnée le privilège:
 
 `MariaDB [(none)]> GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' \
 IDENTIFIED BY 'mind';
@@ -243,21 +235,15 @@ $ export OS_IDENTITY_API_VERSION=3`
 
 `$openstack rôle create myrole`
 
-
-
 # Ajoutez le rôle myrole au projet myproject et à l'utilisateur myuser
 
 `$ openstack role add --project myproject --user myuser myrole`
-
-
 
 # vérification :
 
 -Désactiver les variables temporaires d'environnement
 
 `$ unset OS_AUTH_URL OS_PASSWORD`
-
-
 
 # -demandez un jeton d'authentification en tant que utilisateur admin :
 
@@ -276,8 +262,6 @@ $ export OS_IDENTITY_API_VERSION=3`
 ` --os-project-domain-name Default --os-user-domain-name Default \
 
 --os-project-name myproject --os-username myuser token issue`
-
-
 
 # Créer des scripts d'environnement client OpenStack :
 
@@ -324,11 +308,7 @@ informations d'identification du projet et de l'utilisateur admin :
 
 # Demander un jeton d'authentification
 
-
-
 `$openstack token issue`
-
-
 
 # **3)service glance:**
 
@@ -340,8 +320,6 @@ informations d'identification du projet et de l'utilisateur admin :
 `#mysql`
 
 `MariaDB [(none)]> CREATE DATABASE glance;`
-
-
 
 # -donnée le privilège:
 
@@ -361,19 +339,13 @@ IDENTIFIED BY 'mind';`
 
 `$ . admin-openrc`
 
-
-
 # creation de l’utulisateur glance:
 
 `$ openstack user create --domain default --password-prompt glance`
 
-
-
 # Ajouter le rôle d'administrateur au projet d'utilisateur et de service de projet:
 
 `$ openstack role add --project service --user glance admin`
-
-
 
 -création de service glance:
 
@@ -382,8 +354,6 @@ IDENTIFIED BY 'mind';`
 --description "OpenStack Image" image`
 
 -Créez les points de terminaison de l'API du service image
-
-
 
 `$ openstack endpoint create --region RegionOne \
 
@@ -399,8 +369,6 @@ image admin http://controller:9292`
 -installer le paquet:
 
 `# apt-get install glance`
-
-
 
 -éditer le fichier `/etc/glance/glance-api.conf` comme suit:`
 
@@ -511,7 +479,7 @@ emplir base de donnée
 `$ wget [http://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img](http://download.cirros-cloud.net/0.4.0/cirros-
 0.4.0-x86_64-disk.img)`
 
-`-`Téléchargez l'image sur le service Image à l'aide du format de disque QCOW2, du format de conteneur nu et de la visibilité 
+-Téléchargez l'image sur le service Image à l'aide du format de disque QCOW2, du format de conteneur nu et de la visibilité 
 publique afin que tous les projets puissent y accéder.
 
 `$ openstack image create "cirros" \
@@ -522,7 +490,7 @@ publique afin que tous les projets puissent y accéder.
 
 --public`
 
-`-`Confirmez le téléchargement de l'image et validez les attributs :
+-Confirmez le téléchargement de l'image et validez les attributs :
 
 `$ openstack image list`
 
@@ -642,8 +610,6 @@ placement internal http://controller:8778
 $ openstack endpoint create --region RegionOne \
 
 placement admin http://controller:8778`
-
-
 
 -installer les paquets 
 
@@ -905,23 +871,14 @@ username = placement
 
 password = mind`
 
-
-
 -Déterminez si votre nœud de traitement prend en charge l'accélération matérielle pour les machines virtuelles:
-
 
 `$egrep -c (vmx|svm) /proc/cpuinfo`
 
 -Si cette commande renvoie une valeur supérieure ou égale à 1, votre nœud de calcul prend en charge l'accélération matérielle, 
 qui ne nécessite généralement aucune configuration supplémentaire.
-
-
-
 Si cette commande renvoie la valeur zéro, votre noeud de traitement ne prend pas en charge l'accélération matérielle et vous 
 devez configurer libvirt pour qu'il utilise QEMU au lieu de KVM.
-
-
-
 Modifiez la section [libvirt] du fichier /etc/nova/nova-compute.conf comme suit:
 
 `[libvirt]
@@ -944,17 +901,12 @@ virt_type = qemu`
 
 `# su -s /bin/sh -c "nova-manage cell_v2 discover_hosts --verbose" nova`
 
-
-
 -editer le fichier `/etc/nova/nova.conf`:
 
 `[scheduler]
 
 discover_hosts_in_cells_interval = 300`
 *vérification :
-
-
-
 `$ . admin-openrc`
 
 -Répertoriez les composants de service pour vérifier le lancement et l'enregistrement de chaque processus
@@ -1008,10 +960,6 @@ IDENTIFIED BY 'mind';`
 `$ openstack service create --name neutron \
 
 --description "OpenStack Networking" network`
-
-
-
-
 *Créer les points de terminaison de l'API de service de mise en réseau
 
 `$ openstack endpoint create --region RegionOne \
@@ -1122,17 +1070,18 @@ password = mind
 [oslo_concurrency]
 # ...
 lock_path = /var/lib/neutron/tmp`
+
 *éditer le fichier `/etc/neutron/plugins/ml2/ml2_conf.ini` :
 `[ml2]
 # ...
 type_drivers = flat,vlan,vxlan
-`[ml2]
+[ml2]
 # ...
 tenant_network_types = vxlan
 [ml2]
 # ...
 mechanism_drivers = linuxbridge,l2population
-`[ml2]
+[ml2]
 # ...
 extension_drivers = port_security
 [ml2_type_flat]
@@ -1144,6 +1093,7 @@ vni_ranges = 1:1000
 [securitygroup]
 # ...
 enable_ipset = true`
+
 -éditer le fichier`/etc/neutron/plugins/ml2/linuxbridge_agent.ini` comme suit :
 `[linux_bridge]
 physical_interface_mappings = provider:eno1
@@ -1155,24 +1105,29 @@ l2_population = true
 # ...
 enable_security_group = true
 firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver`
+
 *Assurez-vous que le noyau de votre système d'exploitation Linux prend en charge les filtres de pont réseau en vérifiant que toutes les valeurs sysctl suivantes sont définies sur 1:
 `systcl net.bridge.bridge-nf-call-iptables
 sysctl net.bridge.bridge-nf-call-ip6tables`
+
 éditer  `/etc/neutron/l3_agent.ini` :
 `[DEFAULT]
 # ...
 interface_driver = linuxbridge`
+
 *éditer le fichier `/etc/neutron/dhcp_agent.ini` comme suit
 `[DEFAULT]
 # ...
 interface_driver = linuxbridge
 dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
 enable_isolated_metadata = true `
+
 -éditer le fichier `/etc/neutron/metadata_agent.ini`
 `[DEFAULT]
 # ...
 nova_metadata_host = controller
 metadata_proxy_shared_secret = mind`
+
 *éditer le fichier `/etc/nova/nova.conf` comme suit :
 `[neutron]
 # ...
@@ -1187,22 +1142,28 @@ username = neutron
 password = mind
 service_metadata_proxy = true
 metadata_proxy_shared_secret = mind`
+
 *finaliser l’installation
   remplir la base de donnée
 `# su -s /bin/sh -c "neutron-db-manage --config-file /etc/neutron/neutron.conf \
   --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head" neutron`
-  redémarrer nova api
+
+redémarrer nova api
   `# service nova-api restart`
+
 redémarrer le service reseau
 `# service neutron-server restart
-# service neutron-linuxbridge-agent restart
-# service neutron-dhcp-agent restart
+ #service neutron-linuxbridge-agent restart
+ # service neutron-dhcp-agent restart
 # service neutron-metadata-agent restart`
+  
   -restart le l3_agent
 `# service neutron-l3-agent restart`
+
 _**compute node**_
-`*installer paquet` 
+*installer paquet 
 `# apt-``get` `install neutron-linuxbridge-agent`
+
 editer le fichier `/etc/neutron/neutron.conf` comme suit :
 `[DEFAULT]
 # ...
@@ -1224,6 +1185,7 @@ username = neutron
 password = mind`
 
 pour option self-service:
+
 *éditer le fichier `/etc/neutron/plugins/ml2/linuxbridge_agent.ini` come suit
 `[linux_bridge]
 physical_interface_mappings = provider:eno1
@@ -1235,9 +1197,11 @@ l2_population = true
 # ...
 enable_security_group = true
 firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver`
+
 *Assurez-vous que le noyau de votre système d'exploitation Linux prend en charge les filtres de pont réseau en vérifiant que toutes les valeurs sysctl suivantes sont définies sur 1:
 `sysctl net.bridge.bridge-nf-call-iptables`
 `sysctl net.bridge.bridge-nf-call-ip6tables`
+
 *******éditer** le fichier `/etc/nova/nova.conf` comme suit:
 `[neutron]
 # ...
@@ -1250,10 +1214,13 @@ region_name = RegionOne
 project_name = service
 username = neutron
 password = mind`
+
 *finaliser l’installation :
- -restart le service compute
+
+-restart le service compute
 `# service nova-compute restart`
- -restart l’agent bidge 
+
+-restart l’agent bidge 
 `# service neutron-linuxbridge-agent restart`
 
 *vérification :
@@ -1266,6 +1233,7 @@ $ openstack network agent list`
 # 6)service horizon :
 *installer le paquet :
 ` # apt-get install openstack-dashboard`
+
 *éditer le fichier `/etc/openstack-dashboard/local_settings.py` comme suit :
 `OPENSTACK_HOST = "controller"
 ALLOWED_HOSTS = ‘*’
@@ -1281,10 +1249,13 @@ OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
 OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = "Default"
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = "admin"
 TIME_ZONE = "Africa/Tunis"`
+
 *ajouter la ligne suivant dans le fichier /etc/apache2/conf-available/openstack-dashboard.conf s’il n’existe pas :
 `WSGIApplicationGroup %{GLOBAL}`
- -finaliser l’installation
+
+-finaliser l’installation
 `# service apache2 reload`
+
 -vérification:
 `[http://controller/horizon](http://controller/horizon)`
 → Authentifiez-vous à l'aide des informations d'identification 
@@ -1294,6 +1265,7 @@ admin,demo,default
 création de la base de donnée cinder
 `# mysql
 MariaDB [(none)]> CREATE DATABASE cinder;`
+
 *donnée le privilège  
 `MariaDB [(none)]> GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'localhost' \
   IDENTIFIED BY 'mind';
@@ -1301,10 +1273,13 @@ MariaDB [(none)]> GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'%' \
   IDENTIFIED BY 'mind';`
 `exit`
 `$ . admin-openrc`
+
 *création d’utilisateur cinder :
 `$ openstack user create --domain default --password-prompt cinder`
+
 *Ajoutez le rôle admin à l'utilisateur cinder
 `$ openstack role add --project service --user cinder admin`
+
 -Créez les entités de service cinderv2 et cinderv3:
 `$ openstack service create --name cinderv2 \
   --description "OpenStack Block Storage" volumev2`
@@ -1322,9 +1297,11 @@ $ openstack endpoint create --region RegionOne \
   volumev3 internal http://controller:8776/v3/%\(project_id\)s
 $ openstack endpoint create --region RegionOne \
   volumev3 admin http://controller:8776/v3/%\(project_id\)s`
+
 *installer et configurer les composants :
  -installer le paquet:
 `# apt-get install cinder-api cinder-scheduler`
+
 *éditer le fichier `/etc/cinder/cinder.conf` comme suit :
 `[database]
 # ...
@@ -1353,13 +1330,17 @@ my_ip = 192.168.1.251
 [oslo_concurrency]
 # ...
 lock_path = /var/lib/cinder/tmp`
+
 -remplir la base :
 `# su -s /bin/sh -c "cinder-manage db sync" cinder`
+
 -éditer le fichier `/etc/nova/nova.conf` comme suit:
 `[cinder]
 os_region_name = RegionOne`
- -redémarrer le service nova 
+
+-redémarrer le service nova 
 `# service nova-api restart`
+
 -redémarrer le service de stockage :
 `# service cinder-scheduler restart
 # service apache2 restart`
