@@ -221,8 +221,6 @@ $ export OS_IDENTITY_API_VERSION=3`
 
 # -crée le projet myproject et l'utilisateur myuser :
 
-
-
 `$ openstack project create --domain default \
 
 --description "Demo Project" myproject`
@@ -267,7 +265,7 @@ $ export OS_IDENTITY_API_VERSION=3`
 
 #  -crée et éditer le fichier admin-openrc comme suit :
 
-`export OS_PROJECT_DOMAIN_NAME=Default`
+`export OS_PROJECT_DOMAIN_NAME=Default
 
 export OS_USER_DOMAIN_NAME=Default
 
@@ -281,7 +279,7 @@ export OS_AUTH_URL=http://controller:5000/v3
 
 export OS_IDENTITY_API_VERSION=3
 
-export OS_IMAGE_API_VERSION=2
+export OS_IMAGE_API_VERSION=2`
 
 # -crere et éditer le fichier demo-openrc comme suit :
 
